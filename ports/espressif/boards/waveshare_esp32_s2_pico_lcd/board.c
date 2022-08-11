@@ -91,6 +91,7 @@ static void display_init(void) {
     // workaround as board_init() is called before reset_port() in main.c
     pwmout_reset();
 
+/* v7.3.2
     common_hal_displayio_display_construct(
         display,
         bus,
@@ -122,6 +123,38 @@ static void display_init(void) {
         false,          // SH1107_addressing
         50000                   // backlight pwm frequency
         );
+*/
+    common_hal_displayio_display_construct(
+      display,
+      bus,
+      160,						// width (after rotation)
+      80,							// height (after rotation)
+      26,							// column start
+      1,							// row start
+      90,							// rotation
+      16,							// color depth
+      false,					// grayscale
+      false,					// pixels in a byte share a row. Only valid for depths < 8
+      1,							// bytes per cell. Only valid for depths < 8
+      false,					// reverse_pixels_in_byte. Only valid for depths < 8
+      true,						// reverse_pixels_in_word
+      MIPI_COMMAND_SET_COLUMN_ADDRESS,	// set column command
+      MIPI_COMMAND_SET_PAGE_ADDRESS,		// set row command
+      MIPI_COMMAND_WRITE_MEMORY_START,	// write memory command
+      display_init_sequence,
+      sizeof(display_init_sequence),
+      &pin_GPIO45,		// backlight pin
+      NO_BRIGHTNESS_COMMAND,
+      1.0f,						// brightness (ignored)
+      //false,					// auto_brightness
+      false,					// single_byte_bounds
+      false,					// data_as_commands
+      true,						// auto_refresh
+      60,							// native_frames_per_second
+      true,						// backlight_on_high
+      false,					// SH1107_addressing
+      50000						// backlight pwm frequency
+    );
 
     common_hal_never_reset_pin(&pin_GPIO45); // backlight pin
 }
